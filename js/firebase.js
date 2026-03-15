@@ -3,14 +3,15 @@
    ==================================== */
 
 const firebaseConfig = {
-  apiKey: "AIzaSyDik8YnNaQRbKVP3W3Zs13JqndJlwZl5uw",
-  authDomain: "ai-prompt-gallery-2d437.firebaseapp.com",
-  projectId: "ai-prompt-gallery-2d437",
-  storageBucket: "ai-prompt-gallery-2d437.firebasestorage.app",
-  messagingSenderId: "451666590366",
-  appId: "1:451666590366:web:8ef2bceb9f688d3e2d998f",
-  measurementId: "G-2QGFJY3XFC"
+  apiKey: window.ENV ? window.ENV.FIREBASE_API_KEY : "",
+  authDomain: window.ENV ? window.ENV.FIREBASE_AUTH_DOMAIN : "",
+  projectId: window.ENV ? window.ENV.FIREBASE_PROJECT_ID : "",
+  storageBucket: window.ENV ? window.ENV.FIREBASE_STORAGE_BUCKET : "",
+  messagingSenderId: window.ENV ? window.ENV.FIREBASE_MESSAGING_SENDER_ID : "",
+  appId: window.ENV ? window.ENV.FIREBASE_APP_ID : "",
+  measurementId: window.ENV ? window.ENV.FIREBASE_MEASUREMENT_ID : ""
 };
+
 
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);

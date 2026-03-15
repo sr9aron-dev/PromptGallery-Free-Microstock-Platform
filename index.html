@@ -12,6 +12,11 @@
   <meta property="og:url" content="https://promptgallery.fun/">
   <link rel="canonical" href="https://promptgallery.fun/">
 
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net">
+  <link rel="preconnect" href="https://wsrv.nl">
+  
   <!-- CSS -->
   <link rel="stylesheet" href="css/variables.css">
   <link rel="stylesheet" href="css/base.css">
@@ -21,12 +26,12 @@
   <link rel="stylesheet" href="css/admin.css">
 
   <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script defer src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script defer src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <script defer src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
 
   <!-- Favicon -->
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect rx='16' width='100' height='100' fill='%236C5CE7'/><text x='50' y='68' text-anchor='middle' font-size='52' font-family='sans-serif' fill='white' font-weight='900'>P</text></svg>">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect rx='16' width='100' height='100' fill='%23FFB300'/><text x='50' y='68' text-anchor='middle' font-size='52' font-family='sans-serif' fill='%231A1A24' font-weight='900'>P</text></svg>">
 </head>
 <body>
   <div id="app">
@@ -56,35 +61,39 @@
     <symbol id="icon-folder" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></symbol>
     <symbol id="icon-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></symbol>
     <symbol id="icon-info" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></symbol>
+    <symbol id="icon-camera" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></symbol>
+    <symbol id="icon-pen-tool" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/></symbol>
+    <symbol id="icon-globe" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></symbol>
   </svg>
 
   <!-- App Scripts -->
-  <script src="js/firebase.js"></script>
-  <script src="js/utils/helpers.js"></script>
-  <script src="js/utils/seo.js"></script>
-  <script src="js/utils/router.js"></script>
-  <script src="js/utils/sitemap.js"></script>
-  <script src="js/components/header.js"></script>
-  <script src="js/components/footer.js"></script>
-  <script src="js/components/photoCard.js"></script>
-  <script src="js/components/photoGrid.js"></script>
-  <script src="js/components/searchBar.js"></script>
-  <script src="js/components/categoryCard.js"></script>
-  <script src="js/pages/home.js"></script>
-  <script src="js/pages/photo.js"></script>
-  <script src="js/pages/search.js"></script>
-  <script src="js/pages/category.js"></script>
-  <script src="js/pages/tag.js"></script>
-  <script src="js/pages/about.js"></script>
-  <script src="js/pages/faq.js"></script>
-  <script src="js/pages/terms.js"></script>
-  <script src="js/pages/privacy.js"></script>
-  <script src="js/pages/license.js"></script>
-  <script src="js/pages/cookies.js"></script>
-  <script src="js/admin/login.js"></script>
-  <script src="js/admin/dashboard.js"></script>
-  <script src="js/admin/upload.js"></script>
-  <script src="js/admin/edit.js"></script>
-  <script src="js/app.js"></script>
+  <script defer src="js/env.js"></script>
+  <script defer src="js/firebase.js"></script>
+  <script defer src="js/utils/helpers.js"></script>
+  <script defer src="js/utils/seo.js"></script>
+  <script defer src="js/utils/router.js"></script>
+  <script defer src="js/utils/sitemap.js"></script>
+  <script defer src="js/components/header.js"></script>
+  <script defer src="js/components/footer.js"></script>
+  <script defer src="js/components/photoCard.js"></script>
+  <script defer src="js/components/photoGrid.js"></script>
+  <script defer src="js/components/searchBar.js"></script>
+  <script defer src="js/components/categoryCard.js"></script>
+  <script defer src="js/pages/home.js"></script>
+  <script defer src="js/pages/photo.js"></script>
+  <script defer src="js/pages/search.js"></script>
+  <script defer src="js/pages/category.js"></script>
+  <script defer src="js/pages/tag.js"></script>
+  <script defer src="js/pages/about.js"></script>
+  <script defer src="js/pages/faq.js"></script>
+  <script defer src="js/pages/terms.js"></script>
+  <script defer src="js/pages/privacy.js"></script>
+  <script defer src="js/pages/license.js"></script>
+  <script defer src="js/pages/cookies.js"></script>
+  <script defer src="js/admin/login.js"></script>
+  <script defer src="js/admin/dashboard.js"></script>
+  <script defer src="js/admin/upload.js"></script>
+  <script defer src="js/admin/edit.js"></script>
+  <script defer src="js/app.js"></script>
 </body>
 </html>

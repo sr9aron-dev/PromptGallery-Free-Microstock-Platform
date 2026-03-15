@@ -6,44 +6,44 @@
 
 :root {
   /* ── Brand Colors ── */
-  --color-primary: #6C5CE7;
-  --color-primary-light: #A29BFE;
-  --color-primary-dark: #4A3CB5;
-  --color-primary-rgb: 108, 92, 231;
+  --color-primary: #FFB300; /* Vibrant Yellow */
+  --color-primary-light: #FFCA28;
+  --color-primary-dark: #FF8F00;
+  --color-primary-rgb: 255, 179, 0;
 
-  --color-accent: #00CEC9;
-  --color-accent-light: #55EFC4;
-  --color-accent-dark: #00A89D;
+  --color-accent: #212121; /* Dark Grey for contrast */
+  --color-accent-light: #484848;
+  --color-accent-dark: #000000;
 
-  /* ── Neutrals ── */
-  --color-bg: #0F0F14;
-  --color-bg-secondary: #16161D;
-  --color-bg-tertiary: #1E1E28;
-  --color-bg-card: #1A1A24;
-  --color-bg-hover: #24242F;
-  --color-bg-overlay: rgba(0, 0, 0, 0.65);
+  /* ── Neutrals (Light Theme) ── */
+  --color-bg: #F8F9FA; /* Off-white background */
+  --color-bg-secondary: #FFFFFF; /* Pure white cards/nav */
+  --color-bg-tertiary: #F0F2F5; /* Input backgrounds */
+  --color-bg-card: #FFFFFF;
+  --color-bg-hover: #F0F2F5;
+  --color-bg-overlay: rgba(255, 255, 255, 0.85);
 
-  --color-surface: #22222E;
-  --color-surface-hover: #2A2A38;
-  --color-border: rgba(255, 255, 255, 0.08);
-  --color-border-hover: rgba(255, 255, 255, 0.15);
+  --color-surface: #FFFFFF;
+  --color-surface-hover: #F8F9FA;
+  --color-border: rgba(0, 0, 0, 0.08);
+  --color-border-hover: rgba(0, 0, 0, 0.15);
 
-  --color-text: #F0F0F5;
-  --color-text-secondary: #9B9BB0;
-  --color-text-muted: #6B6B80;
-  --color-text-inverse: #0F0F14;
+  --color-text: #1A1A24; /* Dark text */
+  --color-text-secondary: #4A4A5A;
+  --color-text-muted: #808090;
+  --color-text-inverse: #FFFFFF; /* White text on primary buttons */
 
   /* ── Status Colors ── */
   --color-success: #00B894;
-  --color-warning: #FDCB6E;
-  --color-error: #FF6B6B;
-  --color-info: #74B9FF;
+  --color-warning: #FD9644;
+  --color-error: #FC5C65;
+  --color-info: #45AAF2;
 
   /* ── Gradients ── */
-  --gradient-hero: linear-gradient(135deg, #6C5CE7 0%, #00CEC9 100%);
-  --gradient-card: linear-gradient(180deg, rgba(108, 92, 231, 0.08) 0%, transparent 100%);
+  --gradient-hero: linear-gradient(135deg, #FFB300 0%, #FFCA28 100%);
+  --gradient-card: linear-gradient(180deg, rgba(255, 179, 0, 0.08) 0%, transparent 100%);
   --gradient-dark: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.7) 100%);
-  --gradient-glow: radial-gradient(ellipse at center, rgba(108,92,231,0.15) 0%, transparent 70%);
+  --gradient-glow: radial-gradient(ellipse at center, rgba(255, 179, 0, 0.15) 0%, transparent 70%);
 
   /* ── Typography ── */
   --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -94,12 +94,12 @@
   --radius-full: 9999px;
 
   /* ── Shadows ── */
-  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.2);
-  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.25);
-  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.3);
-  --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.4);
-  --shadow-glow: 0 0 24px rgba(108, 92, 231, 0.3);
-  --shadow-glow-accent: 0 0 24px rgba(0, 206, 201, 0.3);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.12);
+  --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.16);
+  --shadow-glow: 0 4px 24px rgba(255, 179, 0, 0.4);
+  --shadow-glow-accent: 0 4px 24px rgba(33, 33, 33, 0.3);
 
   /* ── Transitions ── */
   --transition-fast: 150ms ease;

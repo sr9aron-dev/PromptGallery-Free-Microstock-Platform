@@ -116,6 +116,18 @@ const Helpers = {
   },
 
   /**
+   * Get optimized image URL via free wsrv.nl proxy (Cloudflare)
+   * Resizes large images to WebP thumbnails on the fly for fast loading
+   */
+  getOptimizedImageUrl(url, width = 600) {
+    if (!url) return '';
+    // If it's already an optimized or external icon URL, return as is
+    if (url.includes('wsrv.nl') || url.includes('unsplash.com') || url.includes('picsum.photos')) return url;
+    
+    return `https://wsrv.nl/?url=${encodeURIComponent(url)}&w=${width}&output=webp&q=80`;
+  },
+
+  /**
    * Lazy load images with IntersectionObserver
    */
   initLazyLoad() {
@@ -143,11 +155,11 @@ const Helpers = {
    */
   getResolutionBadge(width) {
     if (!width || width < 1280) return '';
-    let label, color;
-    if (width >= 3840) { label = '4K'; color = '#FFD700'; }
-    else if (width >= 2048) { label = '2K'; color = '#00CEC9'; }
-    else { label = 'HD'; color = '#6C5CE7'; }
-    return `<span style="position:absolute;top:8px;left:8px;background:${color};color:#000;font-size:10px;font-weight:800;padding:2px 6px;border-radius:4px;letter-spacing:0.5px;z-index:1;">${label}</span>`;
+    let label, bg, color;
+    if (width >= 3840) { label = '4K'; bg = '#FFB300'; color = '#000'; }
+    else if (width >= 2048) { label = '2K'; bg = '#FFCA28'; color = '#000'; }
+    else { label = 'HD'; bg = '#212121'; color = '#FFF'; }
+    return `<span style="position:absolute;top:8px;left:8px;background:${bg};color:${color};font-size:10px;font-weight:800;padding:2px 6px;border-radius:4px;letter-spacing:0.5px;z-index:1;">${label}</span>`;
   },
 
   /**

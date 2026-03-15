@@ -51,14 +51,14 @@ const CategoryCard = {
   },
 
   /**
-   * Emoji icons per category
+   * SVG icons per category
    */
   icons: {
-    animals: '🐾', architecture: '🏛️', business: '💼', food: '🍽️',
-    nature: '🌿', people: '👥', technology: '💻', backgrounds: '🎨',
-    objects: '📦', travel: '✈️', lifestyle: '☕', abstract: '🔮',
-    education: '📚', health: '🏥', sports: '⚽', industry: '🏭',
-    environment: '🌍',
+    animals: 'activity', architecture: 'grid', business: 'folder', food: 'heart',
+    nature: 'image', people: 'users', technology: 'settings', backgrounds: 'image',
+    objects: 'box', travel: 'map', lifestyle: 'smile', abstract: 'layout',
+    education: 'book', health: 'activity', sports: 'target', industry: 'tool',
+    environment: 'globe',
   },
 
   render(category) {
@@ -66,18 +66,28 @@ const CategoryCard = {
     const slug = category.slug || Helpers.generateSlug(name);
     const img = this.covers[slug] || this.covers.nature;
     const gradient = this.gradients[slug] || this.gradients.nature;
-    const icon = this.icons[slug] || '📁';
+    // Map standard ones to existing icons
+    let iconName = 'folder';
+    if(slug === 'people') iconName = 'user';
+    if(slug === 'nature' || slug === 'backgrounds') iconName = 'image';
+    if(slug === 'technology') iconName = 'settings';
+    if(slug === 'business') iconName = 'folder';
+    if(slug === 'animals' || slug === 'health') iconName = 'heart';
+    
+    // Fallback to something
+    const iconHtml = Helpers.icon(iconName, 24);
+
     const count = category.count || '';
 
     return `
     <div class="category-card" onclick="Router.navigate('/category/${slug}')">
       <img src="${img}" alt="${name}" loading="lazy"
            onerror="this.style.display='none';this.parentElement.querySelector('.cat-fallback').style.display='flex';">
-      <div class="cat-fallback" style="display:none;position:absolute;inset:0;background:${gradient};align-items:center;justify-content:center;font-size:3rem;">
-        ${icon}
+      <div class="cat-fallback" style="display:none;position:absolute;inset:0;background:${gradient};align-items:center;justify-content:center;color:white;">
+        ${iconHtml}
       </div>
       <div class="category-card-label">
-        <h3>${icon} ${name}</h3>
+        <h3 style="display:flex;align-items:center;gap:8px;">${iconHtml} ${name}</h3>
         <span data-cat-count="${slug}">${count ? `${count} assets` : ''}</span>
       </div>
     </div>`;

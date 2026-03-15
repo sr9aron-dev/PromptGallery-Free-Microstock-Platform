@@ -20,6 +20,7 @@ npm-debug.log*
 .env
 .env.local
 .env.production
+js/env.js
 
 # Build
 dist/

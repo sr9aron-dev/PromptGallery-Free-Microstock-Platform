@@ -50,8 +50,8 @@ const PhotoPage = {
 
       const keywords = photo.keywords || [];
       const resLabel = Helpers.getResolutionLabel(photo.width);
-      const resBadgeColor = photo.width >= 3840 ? '#FFD700' : photo.width >= 2048 ? '#00CEC9' : photo.width >= 1280 ? '#6C5CE7' : '#6B6B80';
-
+      const resBadgeBg = photo.width >= 3840 ? '#FFB300' : photo.width >= 2048 ? '#FFCA28' : photo.width >= 1280 ? '#212121' : '#E0E0E0';
+      const resBadgeColor = photo.width >= 2048 ? '#000' : '#FFF';
       // Fetch related photos
       const relatedPhotos = await FireDB.getRelatedPhotos(photo, 6);
 
@@ -70,9 +70,9 @@ const PhotoPage = {
               <!-- Image Preview -->
               <div>
                 <div class="photo-preview" style="position:relative;">
-                  <img src="${photo.imageUrl}" alt="${Helpers.escapeHtml(photo.title)}" style="width:100%;height:auto;">
+                  <img src="${Helpers.getOptimizedImageUrl(photo.imageUrl, 1400)}" alt="${Helpers.escapeHtml(photo.title)}" style="width:100%;height:auto;">
                   <!-- Resolution Badge -->
-                  ${photo.width >= 1280 ? `<span style="position:absolute;top:12px;left:12px;background:${resBadgeColor};color:#000;font-size:12px;font-weight:800;padding:4px 10px;border-radius:6px;letter-spacing:0.5px;">${resLabel}</span>` : ''}
+                  ${photo.width >= 1280 ? `<span style="position:absolute;top:12px;left:12px;background:${resBadgeBg};color:${resBadgeColor};font-size:12px;font-weight:800;padding:4px 10px;border-radius:6px;letter-spacing:0.5px;">${resLabel}</span>` : ''}
                 </div>
 
                 <!-- Description -->
@@ -108,14 +108,17 @@ const PhotoPage = {
 
                   <!-- Metadata -->
                   <div class="photo-meta">
-                    <div class="photo-meta-row">
+                    <div class="photo-meta-row" style="align-items:center;">
                       <span class="photo-meta-label">Type</span>
-                      <span class="photo-meta-value">${photo.assetType === 'Illustration' ? '🎨' : photo.assetType === 'Vector' ? '✏️' : '📷'} ${photo.assetType || 'Photo'}</span>
+                      <span class="photo-meta-value" style="display:flex;align-items:center;gap:6px;">
+                        ${photo.assetType === 'Illustration' ? Helpers.icon('image', 16) : photo.assetType === 'Vector' ? Helpers.icon('pen-tool', 16) : Helpers.icon('camera', 16)} 
+                        ${photo.assetType || 'Photo'}
+                      </span>
                     </div>
-                    <div class="photo-meta-row">
+                    <div class="photo-meta-row" style="align-items:center;">
                       <span class="photo-meta-label">Resolution</span>
                       <span class="photo-meta-value">
-                        <span style="background:${resBadgeColor};color:#000;font-size:11px;font-weight:700;padding:2px 8px;border-radius:4px;">${resLabel}</span>
+                        <span style="background:${resBadgeBg};color:${resBadgeColor};font-size:11px;font-weight:700;padding:2px 8px;border-radius:4px;">${resLabel}</span>
                       </span>
                     </div>
                     <div class="photo-meta-row">
