@@ -1,0 +1,169 @@
+/* ====================================
+   PromptGallery — Admin Styles
+   ==================================== */
+
+/* ── Admin Layout ── */
+.admin-layout {
+  display: grid;
+  grid-template-columns: var(--sidebar-width) 1fr;
+  min-height: calc(100vh - var(--header-height));
+}
+
+.admin-sidebar {
+  background: var(--color-bg-secondary);
+  border-right: 1px solid var(--color-border);
+  padding: var(--space-xl);
+  position: sticky;
+  top: var(--header-height);
+  height: calc(100vh - var(--header-height));
+  overflow-y: auto;
+}
+.admin-sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+.admin-sidebar-nav a {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: 0.65rem 1rem;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-fast);
+}
+.admin-sidebar-nav a:hover,
+.admin-sidebar-nav a.active {
+  background: rgba(var(--color-primary-rgb), 0.12);
+  color: var(--color-primary-light);
+}
+
+.admin-main {
+  padding: var(--space-2xl);
+  overflow-y: auto;
+}
+.admin-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-2xl);
+}
+.admin-header h1 {
+  font-size: var(--font-size-xl);
+}
+
+/* ── Stats Grid ── */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-md);
+  margin-bottom: var(--space-2xl);
+}
+@media (max-width: 900px) {
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* ── Data Table ── */
+.data-table-wrapper {
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.data-table th,
+.data-table td {
+  padding: var(--space-md) var(--space-lg);
+  text-align: left;
+  font-size: var(--font-size-sm);
+  border-bottom: 1px solid var(--color-border);
+}
+.data-table th {
+  background: var(--color-bg-tertiary);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  font-size: var(--font-size-xs);
+  letter-spacing: 0.05em;
+}
+.data-table td {
+  color: var(--color-text-secondary);
+}
+.data-table tr:hover td {
+  background: var(--color-bg-hover);
+}
+.data-table-thumb {
+  width: 60px;
+  height: 40px;
+  object-fit: cover;
+  border-radius: var(--radius-xs);
+}
+
+/* ── Admin Login ── */
+.admin-login {
+  min-height: calc(100vh - var(--header-height));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.login-card {
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-2xl);
+  width: 100%;
+  max-width: 420px;
+  box-shadow: var(--shadow-xl);
+}
+.login-card h1 {
+  font-size: var(--font-size-xl);
+  margin-bottom: var(--space-xs);
+}
+.login-card p {
+  font-size: var(--font-size-sm);
+  margin-bottom: var(--space-xl);
+}
+
+/* ── Upload Form ── */
+.upload-form {
+  max-width: 700px;
+}
+.upload-dropzone {
+  border: 2px dashed var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-3xl);
+  text-align: center;
+  cursor: pointer;
+  transition: all var(--transition-base);
+  margin-bottom: var(--space-xl);
+}
+.upload-dropzone:hover,
+.upload-dropzone.dragover {
+  border-color: var(--color-primary);
+  background: rgba(var(--color-primary-rgb), 0.05);
+}
+.upload-dropzone-icon {
+  font-size: 3rem;
+  margin-bottom: var(--space-md);
+  opacity: 0.4;
+}
+.upload-preview {
+  max-width: 100%;
+  max-height: 200px;
+  border-radius: var(--radius-sm);
+  margin-top: var(--space-md);
+}
+
+/* ── Responsive Admin ── */
+@media (max-width: 768px) {
+  .admin-layout {
+    grid-template-columns: 1fr;
+  }
+  .admin-sidebar {
+    display: none;
+  }
+}

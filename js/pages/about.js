@@ -1,0 +1,40 @@
+/* ====================================
+   PromptGallery — About Page
+   ==================================== */
+
+const AboutPage = {
+  render() {
+    const app = document.getElementById('app');
+    app.innerHTML = `
+      ${Header.render('/about')}
+      <main class="page-content">
+        <div class="legal-page animate-fade-in">
+          <h1>About PromptGallery</h1>
+          <p><strong>PromptGallery</strong> is a free microstock platform dedicated to providing high-quality stock photos, illustrations, and vectors that are 100% free for personal and commercial use.</p>
+          
+          <h2>Our Mission</h2>
+          <p>We believe creativity should be accessible to everyone. Our mission is to build the largest collection of free, high-quality stock assets that creators, designers, marketers, and developers can use without restrictions.</p>
+          
+          <h2>What Makes Us Different</h2>
+          <ul>
+            <li><strong>100% Free</strong> — Every asset on PromptGallery is free to download and use.</li>
+            <li><strong>No Attribution Required</strong> — While we appreciate credit, it's never required.</li>
+            <li><strong>Commercial Use</strong> — All assets can be used in commercial projects.</li>
+            <li><strong>High Quality</strong> — We curate only the best assets for our collection.</li>
+            <li><strong>Growing Library</strong> — We add new assets regularly to keep our collection fresh.</li>
+          </ul>
+          
+          <h2>License</h2>
+          <p>All assets on PromptGallery are released under the <strong>CC0 (Creative Commons Zero)</strong> or equivalent permissive licenses. This means you can copy, modify, distribute, and use the assets for free, including for commercial purposes, without asking permission.</p>
+          <p>For full license details, please see our <a href="#/license">License page</a>.</p>
+          
+          <h2>Contact</h2>
+          <p>Have questions, feedback, or want to contribute? Reach out to us through our website at <a href="https://promptgallery.fun">promptgallery.fun</a>.</p>
+        </div>
+      </main>
+      ${Footer.render()}
+    `;
+    Header.init();
+    SEO.update({ title: 'About Us', description: 'Learn about PromptGallery — a free microstock platform providing high-quality stock assets for everyone.', url: 'https://promptgallery.fun/#/about' });
+  }
+};
