@@ -41,13 +41,17 @@
 
 .admin-main {
   padding: var(--space-2xl);
+  overflow-x: hidden;
   overflow-y: auto;
+  min-width: 0; /* prevent content from overflowing grid */
 }
 .admin-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin-bottom: var(--space-2xl);
+  flex-wrap: wrap;
+  gap: var(--space-md);
 }
 .admin-header h1 {
   font-size: var(--font-size-xl);
@@ -60,20 +64,19 @@
   gap: var(--space-md);
   margin-bottom: var(--space-2xl);
 }
-@media (max-width: 900px) {
-  .stats-grid { grid-template-columns: repeat(2, 1fr); }
-}
 
 /* ── Data Table ── */
 .data-table-wrapper {
   background: var(--color-bg-card);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
-  overflow: hidden;
+  overflow-x: auto; /* horizontal scroll on mobile */
+  -webkit-overflow-scrolling: touch;
 }
 .data-table {
   width: 100%;
   border-collapse: collapse;
+  min-width: 600px; /* prevent column collapse on small screens */
 }
 .data-table th,
 .data-table td {
@@ -89,6 +92,7 @@
   text-transform: uppercase;
   font-size: var(--font-size-xs);
   letter-spacing: 0.05em;
+  white-space: nowrap;
 }
 .data-table td {
   color: var(--color-text-secondary);
@@ -109,6 +113,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: var(--space-lg);
 }
 .login-card {
   background: var(--color-bg-card);
@@ -158,6 +163,22 @@
   margin-top: var(--space-md);
 }
 
+/* ── Settings / Upload Modal ── */
+.settings-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-md);
+}
+.settings-modal {
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
 /* ── Responsive Admin ── */
 @media (max-width: 768px) {
   .admin-layout {
@@ -165,5 +186,33 @@
   }
   .admin-sidebar {
     display: none;
+  }
+  .admin-main {
+    padding: var(--space-lg) var(--space-md);
+  }
+  .admin-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .admin-header h1 {
+    font-size: var(--font-size-lg);
+  }
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .upload-dropzone {
+    padding: var(--space-xl);
+  }
+  .login-card {
+    padding: var(--space-xl);
+  }
+}
+
+@media (max-width: 500px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+  .admin-main {
+    padding: var(--space-md) var(--space-sm);
   }
 }

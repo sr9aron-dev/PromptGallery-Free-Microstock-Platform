@@ -21,6 +21,9 @@ const AdminDashboard = {
               <button class="btn btn-primary" onclick="Router.navigate('/admin/upload')">
                 ${Helpers.icon('upload', 18)} Upload Asset
               </button>
+              <button class="btn btn-secondary" onclick="SitemapGenerator.download()">
+                📄 Sitemap
+              </button>
             </div>
 
             <!-- Stats -->

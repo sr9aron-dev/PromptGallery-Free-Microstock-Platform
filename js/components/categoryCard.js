@@ -37,7 +37,7 @@ const CategoryCard = {
       <img src="${img}" alt="${name}" loading="lazy">
       <div class="category-card-label">
         <h3>${name}</h3>
-        ${count ? `<span>${count} assets</span>` : ''}
+        <span data-cat-count="${slug}">${count ? `${count} assets` : ''}</span>
       </div>
     </div>`;
   },

@@ -188,7 +188,7 @@ const AdminUpload = {
         file,
         fileHash,
         preview: null,
-        metadata: { title: '', description: '', keywords: '', category: '', assetType: 'Photo', width: 0, height: 0, orientation: 'landscape' },
+        metadata: { title: '', description: '', keywords: '', category: '', assetType: 'Photo', fileFormat: '', width: 0, height: 0, orientation: 'landscape' },
         status: 'pending', // pending, ai-loading, ready, uploading, done, error
         cdnUrl: null,
         errorMsg: null,
@@ -203,6 +203,7 @@ const AdminUpload = {
           entry.metadata.width = img.naturalWidth;
           entry.metadata.height = img.naturalHeight;
           entry.metadata.orientation = img.naturalWidth > img.naturalHeight ? 'landscape' : img.naturalHeight > img.naturalWidth ? 'portrait' : 'square';
+          entry.metadata.fileFormat = (file.name.split('.').pop() || 'jpg').toUpperCase();
           // Reject non-HD (< 1280px width)
           if (!Helpers.isHD(img.naturalWidth)) {
             const idx = this.files.indexOf(entry);
@@ -380,9 +381,10 @@ const AdminUpload = {
       </div>
 
       <!-- Dimensions (read-only) -->
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-sm);font-size:var(--font-size-sm);color:var(--color-text-muted);margin-top:var(--space-sm);">
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:var(--space-sm);font-size:var(--font-size-sm);color:var(--color-text-muted);margin-top:var(--space-sm);">
         <div>${m.width}×${m.height}px</div>
         <div>${m.orientation}</div>
+        <div>${m.fileFormat || 'JPG'}</div>
       </div>
     `;
 
@@ -663,6 +665,7 @@ const AdminUpload = {
           keywords,
           category: entry.metadata.category,
           assetType: entry.metadata.assetType || 'Photo',
+          fileFormat: entry.metadata.fileFormat || 'JPG',
           imageUrl: cdnUrl,
           thumbUrl: cdnUrl,
           width: entry.metadata.width || null,

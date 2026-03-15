@@ -123,6 +123,10 @@ const PhotoPage = {
                       <span class="photo-meta-value">${photo.width || '—'} × ${photo.height || '—'}</span>
                     </div>
                     <div class="photo-meta-row">
+                      <span class="photo-meta-label">Format</span>
+                      <span class="photo-meta-value">${photo.fileFormat || 'JPG'}</span>
+                    </div>
+                    <div class="photo-meta-row">
                       <span class="photo-meta-label">Orientation</span>
                       <span class="photo-meta-value">${photo.orientation || 'Landscape'}</span>
                     </div>
