@@ -27,9 +27,8 @@ const PhotoCard = {
           <span style="font-size:11px;color:var(--color-text-muted);">${typeIcon} ${typeLabel}</span>
         </div>
         <div class="photo-card-actions">
-          <button class="btn-icon" onclick="event.stopPropagation();PhotoCard.download('${photo.id}','${photo.imageUrl || thumbUrl}','${Helpers.escapeHtml(photo.title || slug)}')" 
-                  title="Download">
-            ${Helpers.icon('download', 18)}
+          <button class="btn-icon" onclick="event.stopPropagation();Helpers.toast('Lihat detail foto untuk download.')" title="View Details" aria-label="View Details">
+            ${Helpers.icon('eye', 18)}
           </button>
         </div>
       </div>

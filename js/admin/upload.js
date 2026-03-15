@@ -604,9 +604,9 @@ const AdminUpload = {
     // Save current meta
     this.saveCurrentMeta();
 
-    const toUpload = this.files.filter(f => f.status !== 'done' && f.metadata.title);
+    const toUpload = this.files.filter(f => f.status !== 'done' && f.metadata.title && f.metadata.category);
     if (toUpload.length === 0) {
-      Helpers.toast('No files ready to upload. Add titles first.', 'error');
+      Helpers.toast('No files ready to upload. Add titles and pick a category first.', 'error');
       return;
     }
 

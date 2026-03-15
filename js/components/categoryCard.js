@@ -4,39 +4,80 @@
 
 const CategoryCard = {
   /**
-   * Category cover images from Picsum (placeholder)
+   * Category cover images using Picsum (reliable, no API key)
+   * Each ID maps to a specific consistent image
    */
   covers: {
-    animals: 'https://images.unsplash.com/photo-1474511320723-9a56873571b7?w=400&h=250&fit=crop',
-    architecture: 'https://images.unsplash.com/photo-1487958449943-2429e8be8625?w=400&h=250&fit=crop',
-    business: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=250&fit=crop',
-    food: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=400&h=250&fit=crop',
-    nature: 'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=400&h=250&fit=crop',
-    people: 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=400&h=250&fit=crop',
-    technology: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&h=250&fit=crop',
-    backgrounds: 'https://images.unsplash.com/photo-1557682250-33bd709cbe85?w=400&h=250&fit=crop',
-    objects: 'https://images.unsplash.com/photo-1513542789411-b6a5d4f31634?w=400&h=250&fit=crop',
-    travel: 'https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=400&h=250&fit=crop',
-    lifestyle: 'https://images.unsplash.com/photo-1511988617509-a57c8a288659?w=400&h=250&fit=crop',
-    abstract: 'https://images.unsplash.com/photo-1541701494587-cb58502866ab?w=400&h=250&fit=crop',
-    education: 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=400&h=250&fit=crop',
-    health: 'https://images.unsplash.com/photo-1505751172876-fa1923c5c528?w=400&h=250&fit=crop',
-    sports: 'https://images.unsplash.com/photo-1461896836934-bd45ba8ab083?w=400&h=250&fit=crop',
-    industry: 'https://images.unsplash.com/photo-1504917595217-d4dc5ede4c68?w=400&h=250&fit=crop',
-    environment: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=400&h=250&fit=crop',
+    animals:      'https://picsum.photos/seed/animals/400/250',
+    architecture: 'https://picsum.photos/seed/architecture/400/250',
+    business:     'https://picsum.photos/seed/business/400/250',
+    food:         'https://picsum.photos/seed/food/400/250',
+    nature:       'https://picsum.photos/seed/nature/400/250',
+    people:       'https://picsum.photos/seed/people/400/250',
+    technology:   'https://picsum.photos/seed/technology/400/250',
+    backgrounds:  'https://picsum.photos/seed/backgrounds/400/250',
+    objects:      'https://picsum.photos/seed/objects/400/250',
+    travel:       'https://picsum.photos/seed/travel/400/250',
+    lifestyle:    'https://picsum.photos/seed/lifestyle/400/250',
+    abstract:     'https://picsum.photos/seed/abstract/400/250',
+    education:    'https://picsum.photos/seed/education/400/250',
+    health:       'https://picsum.photos/seed/health/400/250',
+    sports:       'https://picsum.photos/seed/sports/400/250',
+    industry:     'https://picsum.photos/seed/industry/400/250',
+    environment:  'https://picsum.photos/seed/environment/400/250',
+  },
+
+  /**
+   * Gradient fallback colors per category (if image fails to load)
+   */
+  gradients: {
+    animals:      'linear-gradient(135deg, #6C5CE7, #a29bfe)',
+    architecture: 'linear-gradient(135deg, #00b894, #55efc4)',
+    business:     'linear-gradient(135deg, #0984e3, #74b9ff)',
+    food:         'linear-gradient(135deg, #e17055, #fab1a0)',
+    nature:       'linear-gradient(135deg, #00b894, #81ecec)',
+    people:       'linear-gradient(135deg, #fd79a8, #e84393)',
+    technology:   'linear-gradient(135deg, #636e72, #b2bec3)',
+    backgrounds:  'linear-gradient(135deg, #a29bfe, #6c5ce7)',
+    objects:      'linear-gradient(135deg, #fdcb6e, #f39c12)',
+    travel:       'linear-gradient(135deg, #00cec9, #81ecec)',
+    lifestyle:    'linear-gradient(135deg, #fab1a0, #e17055)',
+    abstract:     'linear-gradient(135deg, #e84393, #fd79a8)',
+    education:    'linear-gradient(135deg, #0984e3, #74b9ff)',
+    health:       'linear-gradient(135deg, #00b894, #55efc4)',
+    sports:       'linear-gradient(135deg, #fdcb6e, #e17055)',
+    industry:     'linear-gradient(135deg, #636e72, #2d3436)',
+    environment:  'linear-gradient(135deg, #00b894, #00cec9)',
+  },
+
+  /**
+   * Emoji icons per category
+   */
+  icons: {
+    animals: '🐾', architecture: '🏛️', business: '💼', food: '🍽️',
+    nature: '🌿', people: '👥', technology: '💻', backgrounds: '🎨',
+    objects: '📦', travel: '✈️', lifestyle: '☕', abstract: '🔮',
+    education: '📚', health: '🏥', sports: '⚽', industry: '🏭',
+    environment: '🌍',
   },
 
   render(category) {
     const name = category.name || category;
     const slug = category.slug || Helpers.generateSlug(name);
     const img = this.covers[slug] || this.covers.nature;
+    const gradient = this.gradients[slug] || this.gradients.nature;
+    const icon = this.icons[slug] || '📁';
     const count = category.count || '';
 
     return `
     <div class="category-card" onclick="Router.navigate('/category/${slug}')">
-      <img src="${img}" alt="${name}" loading="lazy">
+      <img src="${img}" alt="${name}" loading="lazy"
+           onerror="this.style.display='none';this.parentElement.querySelector('.cat-fallback').style.display='flex';">
+      <div class="cat-fallback" style="display:none;position:absolute;inset:0;background:${gradient};align-items:center;justify-content:center;font-size:3rem;">
+        ${icon}
+      </div>
       <div class="category-card-label">
-        <h3>${name}</h3>
+        <h3>${icon} ${name}</h3>
         <span data-cat-count="${slug}">${count ? `${count} assets` : ''}</span>
       </div>
     </div>`;
