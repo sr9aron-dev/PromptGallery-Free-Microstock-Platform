@@ -1,5 +1,5 @@
 /* ====================================
-   PromptGallery — Main App Entry
+   PromptGallery — Main App Entry ok 
    ==================================== */
 
 (function () {
