@@ -46,6 +46,7 @@ const Router = {
 
     // Try dynamic routes (e.g. /photo/:slug)
     for (const [pattern, handler] of Object.entries(this.routes)) {
+      if (pattern === '*') continue; // skip wildcard in dynamic matching
       const regex = this._patternToRegex(pattern);
       const match = path.match(regex);
       if (match) {
