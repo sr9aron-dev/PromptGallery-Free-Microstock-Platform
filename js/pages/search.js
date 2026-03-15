@@ -72,7 +72,12 @@ const SearchPage = {
     try {
       let photos = [];
       
-      if (query) {
+      // Handle special queries
+      if (query === 'latest') {
+        photos = await FireDB.getPhotos({ limit: 60, orderBy: 'uploadDate' });
+      } else if (query === 'popular') {
+        photos = await FireDB.getPhotos({ limit: 60, orderBy: 'views' });
+      } else if (query) {
         photos = await FireDB.searchPhotos(query, 60);
       } else {
         const orderBy = sort === 'popular' ? 'views' : 'uploadDate';

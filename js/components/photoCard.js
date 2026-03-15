@@ -7,10 +7,14 @@ const PhotoCard = {
     const title = Helpers.escapeHtml(photo.title || 'Untitled');
     const thumbUrl = photo.thumbUrl || photo.imageUrl || '';
     const slug = photo.slug || photo.id;
+    const resBadge = Helpers.getResolutionBadge(photo.width);
+    const typeIcon = photo.assetType === 'Illustration' ? '🎨' : photo.assetType === 'Vector' ? '✏️' : '📷';
+    const typeLabel = photo.assetType || 'Photo';
 
     return `
     <div class="photo-card" onclick="Router.navigate('/photo/${slug}')" 
          role="link" tabindex="0" aria-label="${title}">
+      ${resBadge}
       <img data-src="${thumbUrl}" 
            alt="${title}" 
            loading="lazy"
@@ -20,9 +24,10 @@ const PhotoCard = {
       <div class="photo-card-overlay">
         <div class="photo-card-info">
           <span class="author">${title}</span>
+          <span style="font-size:11px;color:var(--color-text-muted);">${typeIcon} ${typeLabel}</span>
         </div>
         <div class="photo-card-actions">
-          <button class="btn-icon" onclick="event.stopPropagation();PhotoCard.download('${photo.id}','${thumbUrl}','${slug}')" 
+          <button class="btn-icon" onclick="event.stopPropagation();PhotoCard.download('${photo.id}','${photo.imageUrl || thumbUrl}','${Helpers.escapeHtml(photo.title || slug)}')" 
                   title="Download">
             ${Helpers.icon('download', 18)}
           </button>
@@ -31,15 +36,20 @@ const PhotoCard = {
     </div>`;
   },
 
-  async download(id, url, slug) {
+  async download(id, url, filename) {
     try {
-      // Open image in new tab for download
-      window.open(url, '_blank');
+      Helpers.toast('Downloading...');
+      // Generate clean filename
+      const ext = url.split('.').pop().split('?')[0] || 'jpg';
+      const cleanName = (filename || 'promptgallery-asset').replace(/[^a-zA-Z0-9-_ ]/g, '') + '.' + ext;
+      
+      await Helpers.downloadFile(url, cleanName);
       // Track download count
       if (id) await FireDB.incrementDownloads(id);
-      Helpers.toast('Download started!');
+      Helpers.toast('Download complete!');
     } catch (e) {
       console.error('Download error:', e);
+      Helpers.toast('Download failed', 'error');
     }
   }
 };

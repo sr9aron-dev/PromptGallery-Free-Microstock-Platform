@@ -91,6 +91,15 @@ const AdminEdit = {
             </select>
           </div>
 
+          <div class="form-group">
+            <label class="form-label">Asset Type</label>
+            <select class="form-select" id="editAssetType">
+              <option value="Photo" ${photo.assetType === 'Photo' || !photo.assetType ? 'selected' : ''}>📷 Photo</option>
+              <option value="Illustration" ${photo.assetType === 'Illustration' ? 'selected' : ''}>🎨 Illustration</option>
+              <option value="Vector" ${photo.assetType === 'Vector' ? 'selected' : ''}>✏️ Vector</option>
+            </select>
+          </div>
+
           <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:var(--space-md);">
             <div class="form-group">
               <label class="form-label">Width</label>
@@ -136,6 +145,7 @@ const AdminEdit = {
             description: document.getElementById('editDescription').value.trim(),
             keywords: document.getElementById('editKeywords').value.split(',').map(k => k.trim().toLowerCase()).filter(k => k),
             category: document.getElementById('editCategory').value,
+            assetType: document.getElementById('editAssetType').value,
             imageUrl: document.getElementById('editImageUrl').value.trim(),
             thumbUrl: document.getElementById('editThumbUrl').value.trim(),
             width: parseInt(document.getElementById('editWidth').value) || null,

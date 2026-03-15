@@ -172,29 +172,47 @@ const AdminUpload = {
 
   /* ─── Add Files ─── */
   addFiles(fileList) {
+    let skippedDup = 0, skippedSD = 0;
     for (const file of fileList) {
       if (file.size > 20 * 1024 * 1024) continue;
+      // Skip if already in current batch
       if (this.files.find(f => f.file.name === file.name && f.file.size === file.size)) continue;
+      // Skip if already uploaded before (localStorage)
+      const fileHash = Helpers.uploadedAssets.hash(file);
+      if (Helpers.uploadedAssets.has(fileHash)) {
+        skippedDup++;
+        continue;
+      }
 
       const entry = {
         file,
+        fileHash,
         preview: null,
-        metadata: { title: '', description: '', keywords: '', category: '', width: 0, height: 0, orientation: 'landscape' },
+        metadata: { title: '', description: '', keywords: '', category: '', assetType: 'Photo', width: 0, height: 0, orientation: 'landscape' },
         status: 'pending', // pending, ai-loading, ready, uploading, done, error
         cdnUrl: null,
         errorMsg: null,
       };
 
-      // Generate preview
+      // Generate preview & check resolution
       const reader = new FileReader();
       reader.onload = (e) => {
         entry.preview = e.target.result;
-        // Auto-detect dimensions
         const img = new Image();
         img.onload = () => {
           entry.metadata.width = img.naturalWidth;
           entry.metadata.height = img.naturalHeight;
           entry.metadata.orientation = img.naturalWidth > img.naturalHeight ? 'landscape' : img.naturalHeight > img.naturalWidth ? 'portrait' : 'square';
+          // Reject non-HD (< 1280px width)
+          if (!Helpers.isHD(img.naturalWidth)) {
+            const idx = this.files.indexOf(entry);
+            if (idx > -1) this.files.splice(idx, 1);
+            skippedSD++;
+            this.updateCount();
+            this.renderGrid();
+            Helpers.toast(`Skipped "${file.name}" — resolution too low (${img.naturalWidth}px). Minimum: 1280px (HD)`, 'error');
+            return;
+          }
           this.renderGrid();
         };
         img.src = e.target.result;
@@ -202,6 +220,7 @@ const AdminUpload = {
       reader.readAsDataURL(file);
       this.files.push(entry);
     }
+    if (skippedDup > 0) Helpers.toast(`${skippedDup} file(s) skipped — already uploaded`, 'error');
     this.updateCount();
     this.renderGrid();
   },
@@ -228,6 +247,7 @@ const AdminUpload = {
       }[entry.status] || '';
 
       const hasTitle = entry.metadata.title ? 'border-color:var(--color-success);' : '';
+      const resLabel = Helpers.getResolutionLabel(entry.metadata.width);
 
       return `
         <div onclick="AdminUpload.selectFile(${i})" 
@@ -238,6 +258,8 @@ const AdminUpload = {
             ? `<img src="${entry.preview}" style="width:100%;height:100%;object-fit:cover;" alt="">` 
             : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;">${Helpers.icon('image', 24)}</div>`
           }
+          <!-- Resolution badge -->
+          ${entry.metadata.width ? `<span style="position:absolute;top:4px;left:28px;background:${entry.metadata.width >= 3840 ? '#FFD700' : entry.metadata.width >= 2048 ? '#00CEC9' : '#6C5CE7'};color:#000;font-size:9px;font-weight:800;padding:1px 5px;border-radius:3px;">${resLabel}</span>` : ''}
           <!-- Status badge -->
           <div style="position:absolute;top:4px;right:4px;background:rgba(0,0,0,0.6);border-radius:var(--radius-xs);padding:2px 4px;display:flex;align-items:center;">
             ${statusIcon}
@@ -278,6 +300,7 @@ const AdminUpload = {
     entry.metadata.description = t('metaDesc');
     entry.metadata.keywords = t('metaKeywords');
     entry.metadata.category = t('metaCategory');
+    entry.metadata.assetType = t('metaAssetType');
   },
 
   renderMeta() {
@@ -343,6 +366,16 @@ const AdminUpload = {
         <select class="form-select" id="metaCategory">
           <option value="">Select</option>
           ${categories.map(c => `<option value="${c}" ${c === m.category ? 'selected' : ''}>${c}</option>`).join('')}
+        </select>
+      </div>
+
+      <!-- Asset Type -->
+      <div class="form-group">
+        <label class="form-label">Asset Type</label>
+        <select class="form-select" id="metaAssetType">
+          <option value="Photo" ${m.assetType === 'Photo' ? 'selected' : ''}>📷 Photo</option>
+          <option value="Illustration" ${m.assetType === 'Illustration' ? 'selected' : ''}>🎨 Illustration</option>
+          <option value="Vector" ${m.assetType === 'Vector' ? 'selected' : ''}>✏️ Vector</option>
         </select>
       </div>
 
@@ -418,7 +451,7 @@ const AdminUpload = {
           messages: [
             {
               role: 'system',
-              content: 'You generate metadata for stock photos. Reply ONLY valid JSON: {"title":"...(max 10 words)","description":"...(200-300 words, SEO)","keywords":"...(15-20 comma separated)","category":"...(one of: Animals,Architecture,Business,Food,Nature,People,Technology,Backgrounds,Objects,Travel,Lifestyle,Abstract,Education,Health,Sports,Industry,Environment)"}'
+              content: 'You generate metadata for stock images. Reply ONLY valid JSON: {"title":"...(max 10 words)","description":"...(200-300 words, SEO)","keywords":"...(15-20 comma separated)","category":"...(one of: Animals,Architecture,Business,Food,Nature,People,Technology,Backgrounds,Objects,Travel,Lifestyle,Abstract,Education,Health,Sports,Industry,Environment)","assetType":"...(one of: Photo,Illustration,Vector)"}'
             },
             {
               role: 'user',
@@ -487,6 +520,7 @@ const AdminUpload = {
       entry.metadata.description = result.description || '';
       entry.metadata.keywords = result.keywords || '';
       entry.metadata.category = result.category || '';
+      entry.metadata.assetType = result.assetType || 'Photo';
       entry.status = 'ready';
 
       Helpers.toast(`AI metadata generated for "${entry.file.name}"`);
@@ -628,6 +662,7 @@ const AdminUpload = {
           description: entry.metadata.description,
           keywords,
           category: entry.metadata.category,
+          assetType: entry.metadata.assetType || 'Photo',
           imageUrl: cdnUrl,
           thumbUrl: cdnUrl,
           width: entry.metadata.width || null,
@@ -636,6 +671,8 @@ const AdminUpload = {
         });
 
         entry.status = 'done';
+        // Track in localStorage to prevent re-upload
+        if (entry.fileHash) Helpers.uploadedAssets.add(entry.fileHash);
       } catch (e) {
         console.error('Upload error:', entry.file.name, e);
         entry.status = 'error';
@@ -648,10 +685,18 @@ const AdminUpload = {
       if (this.selectedIndex >= 0) this.renderMeta();
     }
 
+    // Remove successfully uploaded files from grid
+    const successCount = toUpload.filter(f => f.status === 'done').length;
+    this.files = this.files.filter(f => f.status !== 'done');
+    this.selectedIndex = -1;
+    this.updateCount();
+    this.renderGrid();
+    this.renderMeta();
+
     btn.disabled = false;
     btn.innerHTML = `${Helpers.icon('upload', 16)} Upload All`;
-    this.showBatchProgress(`Done! ${toUpload.filter(f => f.status === 'done').length}/${toUpload.length} uploaded`, 100);
-    Helpers.toast(`${toUpload.filter(f => f.status === 'done').length} assets uploaded & published! 🎉`);
+    this.showBatchProgress(`Done! ${successCount}/${toUpload.length} uploaded`, 100);
+    Helpers.toast(`${successCount} assets uploaded & published! 🎉`);
   },
 
   fileToBase64(file) {

@@ -38,23 +38,56 @@ const FireDB = {
     return { id: snap.docs[0].id, ...snap.docs[0].data() };
   },
 
-  // Search photos by keywords array
+  // Search photos by keywords array (also searches by category)
   async searchPhotos(query, limit = 30) {
     const q = query.toLowerCase().trim();
-    const snap = await db.collection('photos')
+    // Try keyword search first
+    let snap = await db.collection('photos')
       .where('keywords', 'array-contains', q)
       .limit(limit)
       .get();
-    return snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    let results = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+    // If few results, also try category match
+    if (results.length < limit) {
+      const catSnap = await db.collection('photos')
+        .where('category', '==', q.charAt(0).toUpperCase() + q.slice(1))
+        .limit(limit - results.length)
+        .get();
+      const existIds = new Set(results.map(r => r.id));
+      catSnap.docs.forEach(doc => {
+        if (!existIds.has(doc.id)) results.push({ id: doc.id, ...doc.data() });
+      });
+    }
+
+    // If still no results, get latest as fallback
+    if (results.length === 0) {
+      const fallback = await db.collection('photos')
+        .orderBy('uploadDate', 'desc')
+        .limit(limit)
+        .get();
+      results = fallback.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    }
+    return results;
   },
 
-  // Get photos by category
+  // Get photos by category (try case-insensitive match)
   async getPhotosByCategory(category, limit = 30) {
-    const snap = await db.collection('photos')
+    // Try exact match first
+    let snap = await db.collection('photos')
       .where('category', '==', category)
       .orderBy('uploadDate', 'desc')
       .limit(limit)
       .get();
+    // Try capitalized if empty
+    if (snap.empty && category) {
+      const cap = category.charAt(0).toUpperCase() + category.slice(1).toLowerCase();
+      snap = await db.collection('photos')
+        .where('category', '==', cap)
+        .orderBy('uploadDate', 'desc')
+        .limit(limit)
+        .get();
+    }
     return snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
   },
 
@@ -65,6 +98,56 @@ const FireDB = {
       .limit(limit)
       .get();
     return snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+  },
+
+  // Get related photos (same category or shared keywords, excluding current)
+  async getRelatedPhotos(photo, limit = 6) {
+    let results = [];
+    const seenIds = new Set([photo.id]);
+
+    // 1. Try same category
+    if (photo.category) {
+      const catSnap = await db.collection('photos')
+        .where('category', '==', photo.category)
+        .limit(limit + 1)
+        .get();
+      catSnap.docs.forEach(doc => {
+        if (!seenIds.has(doc.id) && results.length < limit) {
+          seenIds.add(doc.id);
+          results.push({ id: doc.id, ...doc.data() });
+        }
+      });
+    }
+
+    // 2. If not enough, try first keyword
+    if (results.length < limit && photo.keywords && photo.keywords.length > 0) {
+      const kwSnap = await db.collection('photos')
+        .where('keywords', 'array-contains', photo.keywords[0])
+        .limit(limit + 1)
+        .get();
+      kwSnap.docs.forEach(doc => {
+        if (!seenIds.has(doc.id) && results.length < limit) {
+          seenIds.add(doc.id);
+          results.push({ id: doc.id, ...doc.data() });
+        }
+      });
+    }
+
+    // 3. If still not enough, pad with recent
+    if (results.length < limit) {
+      const recentSnap = await db.collection('photos')
+        .orderBy('uploadDate', 'desc')
+        .limit(limit + 1)
+        .get();
+      recentSnap.docs.forEach(doc => {
+        if (!seenIds.has(doc.id) && results.length < limit) {
+          seenIds.add(doc.id);
+          results.push({ id: doc.id, ...doc.data() });
+        }
+      });
+    }
+
+    return results;
   },
 
   // Get categories

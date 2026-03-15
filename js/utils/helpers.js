@@ -135,5 +135,84 @@ const Helpers = {
 
     document.querySelectorAll('img[data-src]').forEach(img => observer.observe(img));
     return observer;
+  },
+
+  /**
+   * Get resolution badge (HD / 2K / 4K) based on image width
+   * HD: >= 1280px, 2K: >= 2048px, 4K: >= 3840px
+   */
+  getResolutionBadge(width) {
+    if (!width || width < 1280) return '';
+    let label, color;
+    if (width >= 3840) { label = '4K'; color = '#FFD700'; }
+    else if (width >= 2048) { label = '2K'; color = '#00CEC9'; }
+    else { label = 'HD'; color = '#6C5CE7'; }
+    return `<span style="position:absolute;top:8px;left:8px;background:${color};color:#000;font-size:10px;font-weight:800;padding:2px 6px;border-radius:4px;letter-spacing:0.5px;z-index:1;">${label}</span>`;
+  },
+
+  /**
+   * Get resolution label text
+   */
+  getResolutionLabel(width) {
+    if (!width || width < 1280) return 'SD';
+    if (width >= 3840) return '4K';
+    if (width >= 2048) return '2K';
+    return 'HD';
+  },
+
+  /**
+   * Check if image meets minimum HD requirement (>= 1280px width)
+   */
+  isHD(width) {
+    return width && width >= 1280;
+  },
+
+  /**
+   * Direct download file via fetch + blob
+   */
+  async downloadFile(url, filename) {
+    try {
+      const res = await fetch(url);
+      if (!res.ok) throw new Error('Download failed');
+      const blob = await res.blob();
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = filename || 'download';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(a.href);
+      return true;
+    } catch (e) {
+      // Fallback: open in new tab
+      window.open(url, '_blank');
+      return false;
+    }
+  },
+
+  /**
+   * Track uploaded assets in localStorage to prevent duplicates
+   */
+  uploadedAssets: {
+    _key: 'pg_uploaded_assets',
+    getAll() {
+      return JSON.parse(localStorage.getItem(this._key) || '[]');
+    },
+    add(fileHash) {
+      const list = this.getAll();
+      if (!list.includes(fileHash)) {
+        list.push(fileHash);
+        localStorage.setItem(this._key, JSON.stringify(list));
+      }
+    },
+    has(fileHash) {
+      return this.getAll().includes(fileHash);
+    },
+    /**
+     * Generate a simple hash from file name + size + lastModified
+     */
+    hash(file) {
+      return `${file.name}_${file.size}_${file.lastModified}`;
+    }
   }
 };

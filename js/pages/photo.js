@@ -49,9 +49,11 @@ const PhotoPage = {
       SEO.setPhotoStructuredData(photo);
 
       const keywords = photo.keywords || [];
-      const relatedPhotos = keywords.length > 0 
-        ? await FireDB.getPhotosByTag(keywords[0], 6)
-        : [];
+      const resLabel = Helpers.getResolutionLabel(photo.width);
+      const resBadgeColor = photo.width >= 3840 ? '#FFD700' : photo.width >= 2048 ? '#00CEC9' : photo.width >= 1280 ? '#6C5CE7' : '#6B6B80';
+
+      // Fetch related photos
+      const relatedPhotos = await FireDB.getRelatedPhotos(photo, 6);
 
       app.innerHTML = `
         ${Header.render()}
@@ -67,8 +69,10 @@ const PhotoPage = {
             <div class="two-col">
               <!-- Image Preview -->
               <div>
-                <div class="photo-preview">
+                <div class="photo-preview" style="position:relative;">
                   <img src="${photo.imageUrl}" alt="${Helpers.escapeHtml(photo.title)}" style="width:100%;height:auto;">
+                  <!-- Resolution Badge -->
+                  ${photo.width >= 1280 ? `<span style="position:absolute;top:12px;left:12px;background:${resBadgeColor};color:#000;font-size:12px;font-weight:800;padding:4px 10px;border-radius:6px;letter-spacing:0.5px;">${resLabel}</span>` : ''}
                 </div>
 
                 <!-- Description -->
@@ -96,14 +100,24 @@ const PhotoPage = {
               <!-- Sidebar -->
               <div class="photo-sidebar">
                 <div style="display:flex;flex-direction:column;gap:var(--space-md);">
-                  <!-- Download Button -->
+                  <!-- Download Button (direct file download) -->
                   <button class="btn btn-accent btn-lg" style="width:100%" 
-                          onclick="PhotoCard.download('${photo.id}','${photo.imageUrl}','${slug}')">
+                          onclick="PhotoCard.download('${photo.id}','${photo.imageUrl}','${Helpers.escapeHtml(photo.title)}')">
                     ${Helpers.icon('download', 20)} Free Download
                   </button>
 
                   <!-- Metadata -->
                   <div class="photo-meta">
+                    <div class="photo-meta-row">
+                      <span class="photo-meta-label">Type</span>
+                      <span class="photo-meta-value">${photo.assetType === 'Illustration' ? '🎨' : photo.assetType === 'Vector' ? '✏️' : '📷'} ${photo.assetType || 'Photo'}</span>
+                    </div>
+                    <div class="photo-meta-row">
+                      <span class="photo-meta-label">Resolution</span>
+                      <span class="photo-meta-value">
+                        <span style="background:${resBadgeColor};color:#000;font-size:11px;font-weight:700;padding:2px 8px;border-radius:4px;">${resLabel}</span>
+                      </span>
+                    </div>
                     <div class="photo-meta-row">
                       <span class="photo-meta-label">Dimensions</span>
                       <span class="photo-meta-value">${photo.width || '—'} × ${photo.height || '—'}</span>
@@ -152,7 +166,7 @@ const PhotoPage = {
               <div class="section-header">
                 <h2 class="section-title">Related Assets</h2>
               </div>
-              ${PhotoGrid.render(relatedPhotos.filter(p => p.slug !== slug))}
+              ${PhotoGrid.render(relatedPhotos)}
             </section>` : ''}
           </div>
         </main>
