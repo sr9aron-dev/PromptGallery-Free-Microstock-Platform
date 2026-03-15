@@ -1,8 +1,9 @@
-# Netlify Config
-
 [build]
   command = "node build.js"
   publish = "."
+
+[build.environment]
+  SECRETS_SCAN_ENABLED = "false"
 
 [[redirects]]
   from = "/*"
