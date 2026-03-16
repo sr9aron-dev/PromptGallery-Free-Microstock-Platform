@@ -8,10 +8,10 @@ const SEO = {
    */
   update({ title, description, url, image, type = 'website' }) {
     // Title: Aim for 50-60 characters
-    const suffix = ' — PromptGallery Free Stock Assets';
+    const suffix = ' — PromptGallery Free High-Quality Stock Assets';
     document.title = title 
-      ? `${title}${suffix}` 
-      : 'Free High-Quality Stock Assets — PromptGallery';
+      ? `${title}${suffix}`.substring(0, 60) 
+      : 'Free High-Quality Stock Photos & Assets — PromptGallery';
 
     // Meta description
     this._setMeta('description', description || 'Download thousands of free high-quality stock photos, illustrations, and vectors. 100% free for personal and commercial use.');

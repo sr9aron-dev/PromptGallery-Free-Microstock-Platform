@@ -69,8 +69,12 @@ const PhotoPage = {
             <div class="two-col">
               <!-- Image Preview -->
               <div>
-                <div class="photo-preview" style="position:relative;">
+                <div class="photo-preview" style="position:relative; overflow: hidden;">
                   <img src="${Helpers.getOptimizedImageUrl(photo.imageUrl, 1400)}" alt="${Helpers.escapeHtml(photo.title)}" style="width:100%;height:auto;">
+                  <!-- Watermark Overlay -->
+                  <div class="watermark-overlay">
+                    <span class="watermark-text">PROMPTGALLERY.FUN</span>
+                  </div>
                   <!-- Resolution Badge -->
                   ${photo.width >= 1280 ? `<span style="position:absolute;top:12px;left:12px;background:${resBadgeBg};color:${resBadgeColor};font-size:12px;font-weight:800;padding:4px 10px;border-radius:6px;letter-spacing:0.5px;">${resLabel}</span>` : ''}
                 </div>

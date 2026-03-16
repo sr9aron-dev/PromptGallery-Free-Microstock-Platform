@@ -453,7 +453,7 @@ const AdminUpload = {
           messages: [
             {
               role: 'system',
-              content: 'You generate metadata for stock images. Reply ONLY valid JSON. Analyze the image carefully to determine if it is a real-life Photo, a digital/hand-drawn Illustration, or a clean Vector-style graphic. JSON: {"title":"...(max 10 words)","description":"...(200-300 words, SEO)","keywords":"...(15-20 comma separated)","category":"...(one of: Animals,Architecture,Business,Food,Nature,People,Technology,Backgrounds,Objects,Travel,Lifestyle,Abstract,Education,Health,Sports,Industry,Environment)","assetType":"...(one of: Photo,Illustration,Vector)"}'
+              content: 'You generate metadata for stock images. Reply ONLY valid JSON. Analyze the image carefully to determine if it is a real-life Photo (photorealistic, natural), a digital/hand-drawn Illustration (flat, textured, artistic), or a clean Vector-style graphic. JSON: {"title":"...(max 10 words)","description":"...(200-300 words, SEO)","keywords":"...(15-20 comma separated)","category":"...(one of: Animals,Architecture,Business,Food,Nature,People,Technology,Backgrounds,Objects,Travel,Lifestyle,Abstract,Education,Health,Sports,Industry,Environment)","assetType":"Photo" | "Illustration" | "Vector"}'
             },
             {
               role: 'user',
@@ -500,6 +500,14 @@ const AdminUpload = {
     }
   },
 
+  normalizeAssetType(type) {
+    if (!type) return 'Photo';
+    const t = type.toLowerCase();
+    if (t.includes('vector')) return 'Vector';
+    if (t.includes('illus')) return 'Illustration';
+    return 'Photo';
+  },
+
   /* ─── AI Single ─── */
   async aiGenerateSingle(index) {
     const entry = this.files[index];
@@ -522,7 +530,7 @@ const AdminUpload = {
       entry.metadata.description = result.description || '';
       entry.metadata.keywords = result.keywords || '';
       entry.metadata.category = result.category || '';
-      entry.metadata.assetType = result.assetType || 'Photo';
+      entry.metadata.assetType = this.normalizeAssetType(result.assetType);
       entry.status = 'ready';
 
       Helpers.toast(`AI metadata generated for "${entry.file.name}"`);
@@ -571,7 +579,7 @@ const AdminUpload = {
         entry.metadata.description = result.description || '';
         entry.metadata.keywords = result.keywords || '';
         entry.metadata.category = result.category || '';
-        entry.metadata.assetType = result.assetType || 'Photo';
+        entry.metadata.assetType = this.normalizeAssetType(result.assetType);
         entry.status = 'ready';
       } catch (e) {
         console.error('AI error for', entry.file.name, e);
@@ -701,6 +709,16 @@ const AdminUpload = {
     btn.innerHTML = `${Helpers.icon('upload', 16)} Upload All`;
     this.showBatchProgress(`Done! ${successCount}/${toUpload.length} uploaded`, 100);
     Helpers.toast(`${successCount} assets uploaded & published! 🎉`);
+
+    // Quick SEO Win: Ping Google Sitemap automatically
+    if (successCount > 0) {
+      try {
+        fetch('https://www.google.com/ping?sitemap=https://promptgallery.fun/sitemap.xml', { mode: 'no-cors' });
+        console.log('Google Sitemap Ping triggered automatically.');
+      } catch (e) {
+        console.error('Failed to ping Google', e);
+      }
+    }
   },
 
   fileToBase64(file) {

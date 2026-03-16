@@ -24,15 +24,14 @@ const PhotoCard = {
            src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 300'%3E%3Crect fill='%231E1E28' width='400' height='300'/%3E%3C/svg%3E"
            onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 400 300%22%3E%3Crect fill=%22%231E1E28%22 width=%22400%22 height=%22300%22/%3E%3Ctext x=%22200%22 y=%22158%22 text-anchor=%22middle%22 fill=%22%236B6B80%22 font-family=%22sans-serif%22 font-size=%2216%22%3EImage%3C/text%3E%3C/svg%3E'"
            >
+      <!-- Watermark Overlay -->
+      <div class="watermark-overlay" style="opacity: 0.1;">
+        <span class="watermark-text" style="font-size: 1.5rem;">PROMPTGALLERY</span>
+      </div>
       <div class="photo-card-overlay">
         <div class="photo-card-info" style="display:flex;align-items:center;gap:6px;">
           ${photo.author ? `<span class="author">${Helpers.escapeHtml(photo.author.name)}</span>` : ''}
           <span style="display:inline-flex;align-items:center;gap:4px;font-size:11px;color:rgba(255,255,255,0.8);">${typeIcon} ${typeLabel}</span>
-        </div>
-        <div class="photo-card-actions">
-          <button class="btn-icon" onclick="event.stopPropagation();Helpers.toast('Lihat detail foto untuk download.')" title="View Details" aria-label="View Details">
-            ${Helpers.icon('eye', 18)}
-          </button>
         </div>
       </div>
     </div>`;

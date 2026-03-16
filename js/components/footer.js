@@ -54,6 +54,7 @@ const Footer = {
             <div class="footer-links social-links">
               <a href="https://youtube.com/@promptgallery" target="_blank" rel="noopener">YouTube</a>
               <a href="https://x.com/promptgallery" target="_blank" rel="noopener">X (Twitter)</a>
+              <a href="https://facebook.com/promptgallery" target="_blank" rel="noopener">Facebook</a>
             </div>
           </div>
         </div>

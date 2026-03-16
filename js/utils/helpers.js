@@ -124,7 +124,7 @@ const Helpers = {
     // If it's already an optimized or external icon URL, return as is
     if (url.includes('wsrv.nl') || url.includes('unsplash.com') || url.includes('picsum.photos')) return url;
     
-    return `https://wsrv.nl/?url=${encodeURIComponent(url)}&w=${width}&output=webp&q=80`;
+    return `https://wsrv.nl/?url=${encodeURIComponent(url)}&w=${width}&output=auto&q=80`;
   },
 
   /**
