@@ -1,0 +1,17 @@
+{
+  "name": "promptgallery-images",
+  "version": "1.0.0",
+  "description": "Free Creative Assets & Prompts for Everyone",
+  "main": "index.html",
+  "dependencies": {
+    "firebase-admin": "^12.1.0"
+  },
+  "devDependencies": {
+    "vercel": "^33.0.0"
+  },
+  "scripts": {
+    "start": "serve .",
+    "dev": "vercel dev",
+    "dev:local": "http-server . -p 8080"
+  }
+}

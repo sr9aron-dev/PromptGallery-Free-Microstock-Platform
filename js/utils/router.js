@@ -29,12 +29,19 @@ const Router = {
   },
 
   /**
-   * Resolve current hash to a route handler
+   * Resolve current path/hash to a route handler
    */
   resolve() {
-    const hash = window.location.hash.slice(1) || '/';
-    const path = hash.split('?')[0];
-    const params = Helpers.parseQueryParams(hash);
+    // Priority: 1. Hash (local/legacy), 2. Pathname (Vercel clean URLs)
+    const hash = window.location.hash.slice(1);
+    const pathname = window.location.pathname;
+    
+    let fullPath = hash || pathname || '/';
+    if (fullPath.includes('?')) fullPath = fullPath.split('?')[0];
+    
+    // Normalize path (ensure it starts with /)
+    const path = fullPath.startsWith('/') ? fullPath : '/' + fullPath;
+    const params = Helpers.parseQueryParams(window.location.hash || window.location.search);
 
     // Try exact match first
     if (this.routes[path]) {

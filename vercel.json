@@ -1,0 +1,30 @@
+{
+  "version": 2,
+  "rewrites": [
+    {
+      "source": "/sitemap.xml",
+      "destination": "/api/sitemap"
+    },
+    {
+      "source": "/photo/:slug",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/category/:slug",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/tag/:tag",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/(about|faq|terms|privacy|license|cookies|categories)",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/admin/:path*",
+      "destination": "/index.html"
+    }
+  ],
+  "cleanUrls": true
+}
