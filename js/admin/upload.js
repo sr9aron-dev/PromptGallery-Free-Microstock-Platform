@@ -453,7 +453,7 @@ const AdminUpload = {
           messages: [
             {
               role: 'system',
-              content: 'You generate metadata for stock images. Reply ONLY valid JSON: {"title":"...(max 10 words)","description":"...(200-300 words, SEO)","keywords":"...(15-20 comma separated)","category":"...(one of: Animals,Architecture,Business,Food,Nature,People,Technology,Backgrounds,Objects,Travel,Lifestyle,Abstract,Education,Health,Sports,Industry,Environment)","assetType":"...(one of: Photo,Illustration,Vector)"}'
+              content: 'You generate metadata for stock images. Reply ONLY valid JSON. Analyze the image carefully to determine if it is a real-life Photo, a digital/hand-drawn Illustration, or a clean Vector-style graphic. JSON: {"title":"...(max 10 words)","description":"...(200-300 words, SEO)","keywords":"...(15-20 comma separated)","category":"...(one of: Animals,Architecture,Business,Food,Nature,People,Technology,Backgrounds,Objects,Travel,Lifestyle,Abstract,Education,Health,Sports,Industry,Environment)","assetType":"...(one of: Photo,Illustration,Vector)"}'
             },
             {
               role: 'user',
@@ -571,6 +571,7 @@ const AdminUpload = {
         entry.metadata.description = result.description || '';
         entry.metadata.keywords = result.keywords || '';
         entry.metadata.category = result.category || '';
+        entry.metadata.assetType = result.assetType || 'Photo';
         entry.status = 'ready';
       } catch (e) {
         console.error('AI error for', entry.file.name, e);

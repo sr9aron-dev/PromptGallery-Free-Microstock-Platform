@@ -17,7 +17,7 @@ const Footer = {
           </div>
 
           <div>
-            <h4 class="footer-title">Explore</h4>
+            <h3 class="footer-title">Explore</h3>
             <div class="footer-links">
               <a href="#/">Home</a>
               <a href="#/categories">Categories</a>
@@ -27,7 +27,7 @@ const Footer = {
           </div>
 
           <div>
-            <h4 class="footer-title">Categories</h4>
+            <h3 class="footer-title">Categories</h3>
             <div class="footer-links">
               <a href="#/category/nature">Nature</a>
               <a href="#/category/business">Business</a>
@@ -38,7 +38,7 @@ const Footer = {
           </div>
 
           <div>
-            <h4 class="footer-title">Legal</h4>
+            <h3 class="footer-title">Legal</h3>
             <div class="footer-links">
               <a href="#/about">About Us</a>
               <a href="#/faq">FAQ</a>
@@ -46,6 +46,14 @@ const Footer = {
               <a href="#/terms">Terms of Service</a>
               <a href="#/privacy">Privacy Policy</a>
               <a href="#/cookies">Cookies Policy</a>
+            </div>
+          </div>
+
+          <div>
+            <h3 class="footer-title">Follow Us</h3>
+            <div class="footer-links social-links">
+              <a href="https://youtube.com/@promptgallery" target="_blank" rel="noopener">YouTube</a>
+              <a href="https://x.com/promptgallery" target="_blank" rel="noopener">X (Twitter)</a>
             </div>
           </div>
         </div>

@@ -17,7 +17,7 @@ const HomePage = {
         <!-- Hero Section -->
         <section class="hero">
           <div class="hero-content animate-fade-in">
-            <h1>Free Stock Assets</h1>
+            <h1 class="hero-title">Free High-Quality Stock Assets</h1>
             <p>Thousands of high-quality AI-generated photos, illustrations, and vectors — 100% free for personal & commercial use.</p>
             ${SearchBar.render()}
             <div class="hero-stats">

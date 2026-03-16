@@ -7,8 +7,11 @@ const SEO = {
    * Update page meta tags dynamically
    */
   update({ title, description, url, image, type = 'website' }) {
-    // Title
-    document.title = title ? `${title} — PromptGallery` : 'PromptGallery — Free High-Quality Stock Assets';
+    // Title: Aim for 50-60 characters
+    const suffix = ' — PromptGallery Free Stock Assets';
+    document.title = title 
+      ? `${title}${suffix}` 
+      : 'Free High-Quality Stock Assets — PromptGallery';
 
     // Meta description
     this._setMeta('description', description || 'Download thousands of free high-quality stock photos, illustrations, and vectors. 100% free for personal and commercial use.');
