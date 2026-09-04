@@ -1,17 +1,21 @@
 {
-  "name": "promptgallery-images",
+  "name": "storyboard-workspace",
+  "private": true,
   "version": "1.0.0",
-  "description": "Free Creative Assets & Prompts for Everyone",
-  "main": "index.html",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
   "dependencies": {
-    "firebase-admin": "^12.1.0"
+    "firebase": "^12.18.0",
+    "lucide-react": "^0.475.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
   },
   "devDependencies": {
-    "vercel": "^33.0.0"
-  },
-  "scripts": {
-    "start": "serve .",
-    "dev": "vercel dev",
-    "dev:local": "http-server . -p 8080"
+    "@vitejs/plugin-react": "^4.3.4",
+    "vite": "^6.1.0"
   }
 }

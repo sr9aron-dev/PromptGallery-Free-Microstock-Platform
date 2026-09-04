@@ -1,0 +1,32 @@
+{
+  "name": "Promptgallery — AI Storyboard Workspace",
+  "short_name": "Promptgallery",
+  "description": "Modern, lightweight Storyboard & Generative AI Prompt Workspace.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#090d16",
+  "theme_color": "#4f46e5",
+  "categories": ["productivity", "photo", "entertainment", "utilities"],
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
