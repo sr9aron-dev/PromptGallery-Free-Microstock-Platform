@@ -11,7 +11,7 @@ import LoginPage from './components/auth/LoginPage';
 import BroadcastModal from './components/admin/BroadcastModal';
 import { INITIAL_STORYBOARDS, DEFAULT_CATEGORIES } from './data/mockData';
 import { getInitialUser, authenticateWithGmail, ADMIN_EMAIL } from './services/auth';
-import { signOutFirebase, saveStoryboardToCloud, subscribeStoryboards } from './services/firebase';
+import { signOutFirebase, saveStoryboardToCloud, subscribeStoryboards, fetchCloudStoryboards } from './services/firebase';
 import { Check, Download, Smartphone, X } from 'lucide-react';
 
 const syncChannel = typeof window !== 'undefined' && 'BroadcastChannel' in window
@@ -223,6 +223,27 @@ export default function App() {
     };
   }, []);
 
+  // Fetch real cloud storyboards from Firestore on mount
+  useEffect(() => {
+    let isMounted = true;
+    async function loadCloud() {
+      const cloudData = await fetchCloudStoryboards(80);
+      if (isMounted && cloudData && Array.isArray(cloudData) && cloudData.length > 0) {
+        setItems(prevItems => {
+          const cloudIds = new Set(cloudData.map(c => c.id));
+          const localOnly = prevItems.filter(p => !cloudIds.has(p.id) && p.id.startsWith('sb-'));
+          const merged = [...localOnly, ...cloudData];
+          try {
+            localStorage.setItem('storyboard_items', JSON.stringify(merged));
+          } catch (e) {}
+          return merged;
+        });
+      }
+    }
+    loadCloud();
+    return () => { isMounted = false; };
+  }, []);
+
   const handleAddCategory = (newCat) => {
     const trimmed = newCat.trim();
     if (!trimmed) return;
@@ -331,19 +352,24 @@ export default function App() {
   };
 
   // Create new storyboard item (Admin Only)
-  const handleCreateStoryboard = (newItem) => {
+  const handleCreateStoryboard = async (newItem) => {
     if (currentUser?.role !== 'admin') {
       showToast(`Only Admin (${ADMIN_EMAIL}) can publish storyboards`);
       return;
     }
-    const createdItem = {
+    const tempId = `sb-${Date.now()}`;
+    const optimisticItem = {
       ...newItem,
-      id: `sb-${Date.now()}`
+      id: tempId,
+      isNew: true,
+      author: 'sr7aron@gmail.com',
+      authorRole: 'admin',
+      createdAt: 'Just now'
     };
 
     // 1. Immediately update local state & localStorage
     setItems(prev => {
-      const updated = [createdItem, ...prev];
+      const updated = [optimisticItem, ...prev];
       try {
         localStorage.setItem('storyboard_items', JSON.stringify(updated));
       } catch (e) {}
@@ -353,14 +379,27 @@ export default function App() {
     // 2. Broadcast immediately to any other open tabs in the browser
     if (syncChannel) {
       try {
-        syncChannel.postMessage({ type: 'NEW_STORYBOARD', item: createdItem });
+        syncChannel.postMessage({ type: 'NEW_STORYBOARD', item: optimisticItem });
       } catch (e) {}
     }
 
-    // 3. Persist to Firestore cloud database
-    saveStoryboardToCloud(createdItem);
+    // 3. Reset view to storyboard so post is right at the top
+    setCurrentView('storyboard');
+    setSelectedItem(null);
+    setSelectedCategory('All');
+    setMediaTypeFilter('all');
+    setSearchQuery('');
 
-    showToast(`Published "${createdItem.title}" to Storyboard`);
+    // 4. Persist to real Firestore cloud database
+    try {
+      const savedResult = await saveStoryboardToCloud(optimisticItem);
+      if (savedResult && savedResult.id) {
+        setItems(prev => prev.map(item => item.id === tempId ? { ...item, id: savedResult.id } : item));
+      }
+      showToast(`Published "${newItem.title}" to global cloud! 🌐`);
+    } catch (e) {
+      showToast(`Published "${newItem.title}" locally`);
+    }
   };
 
   // Login handler
