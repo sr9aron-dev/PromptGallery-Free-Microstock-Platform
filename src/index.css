@@ -566,6 +566,115 @@ img, video {
   font-weight: 600;
 }
 
+/* Toolbar Controls Row */
+.toolbar-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Sort By Dropdown */
+.sort-dropdown {
+  position: relative;
+}
+
+.sort-trigger {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.75rem;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+}
+
+.sort-trigger:hover {
+  border-color: var(--primary);
+  color: var(--text-primary);
+}
+
+.sort-trigger.active {
+  border-color: var(--primary);
+  color: var(--primary);
+  background-color: var(--primary-light);
+}
+
+.sort-label {
+  display: inline;
+}
+
+.sort-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  min-width: 180px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 0 2px 8px rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(12px);
+  z-index: 100;
+  padding: 0.25rem;
+  animation: sortMenuFadeIn 0.15s ease-out;
+}
+
+@keyframes sortMenuFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.sort-menu-header {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  padding: 0.4rem 0.65rem 0.3rem;
+}
+
+.sort-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.5rem 0.65rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.sort-menu-item:hover {
+  background-color: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.sort-menu-item.active {
+  color: var(--primary);
+  background-color: var(--primary-light);
+  font-weight: 600;
+}
+
+.sort-check {
+  margin-left: auto;
+  font-size: 0.75rem;
+  color: var(--primary);
+}
+
 /* Category Pills */
 .category-pills {
   display: flex;
@@ -1167,12 +1276,25 @@ img, video {
     align-items: stretch;
   }
 
+  .toolbar-controls {
+    flex-wrap: wrap;
+  }
+
+  .sort-label {
+    display: none;
+  }
+
   .search-box {
     max-width: 100%;
   }
 
   .type-filter-group {
     align-self: flex-start;
+  }
+
+  .sort-menu {
+    right: auto;
+    left: 0;
   }
 
   .dropdown-menu {

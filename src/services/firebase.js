@@ -16,7 +16,8 @@ import {
   doc, 
   setDoc, 
   onSnapshot, 
-  query 
+  query,
+  orderBy 
 } from 'firebase/firestore';
 
 const firebaseConfig = {
@@ -156,13 +157,13 @@ export async function saveStoryboardToCloud(item) {
 }
 
 /**
- * Subscribe to real-time storyboard updates from Firestore cloud collection 'photos'
+ * Subscribe to real-time storyboard updates from Firestore cloud collection 'storyboards'
  * @param {Function} onUpdate 
  * @returns {Function} unsubscribe
  */
 export function subscribeStoryboards(onUpdate) {
   try {
-    const q = query(collection(db, 'photos'), orderBy('createdAt', 'desc'));
+    const q = query(collection(db, 'storyboards'), orderBy('createdAt', 'desc'));
     const unsubscribe = onSnapshot(q, (snapshot) => {
       if (!snapshot.empty) {
         const cloudItems = snapshot.docs.map(d => mapFirestoreDocToStoryboard(d.id, d.data()));

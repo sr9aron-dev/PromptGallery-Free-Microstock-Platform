@@ -30,23 +30,7 @@ export default function App() {
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          const savedIds = new Set(parsed.map(p => p.id));
-          const missingInitials = INITIAL_STORYBOARDS.filter(init => !savedIds.has(init.id));
-          const combined = [...missingInitials, ...parsed];
-          return combined.map(item => {
-            const initialMatch = INITIAL_STORYBOARDS.find(init => init.id === item.id);
-            return {
-              ...item,
-              author: item.author || 'sr7aron@gmail.com',
-              authorRole: item.authorRole || 'admin',
-              description: item.description || initialMatch?.description || '',
-              mediaItems: (item.mediaItems && item.mediaItems.length > 0) 
-                ? item.mediaItems 
-                : (initialMatch?.mediaItems || [{ id: `${item.id}-m1`, url: item.mediaUrl || item.thumbnail, thumbnailUrl: item.thumbnail, type: item.type, caption: item.title }])
-            };
-          });
-        }
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
       } catch (e) { /* ignore */ }
     }
     return INITIAL_STORYBOARDS;
@@ -109,6 +93,7 @@ export default function App() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [mediaTypeFilter, setMediaTypeFilter] = useState('all');
+  const [sortBy, setSortBy] = useState('newest');
 
   // Modals & Popovers
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
@@ -117,8 +102,12 @@ export default function App() {
   const [isBroadcastModalOpen, setIsBroadcastModalOpen] = useState(false);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
-  // Notifications state
-  const [hasUnreadNotifications, setHasUnreadNotifications] = useState(true);
+  // Notifications state (persisted so "Mark all read" survives reload)
+  const [hasUnreadNotifications, setHasUnreadNotifications] = useState(() => {
+    const saved = localStorage.getItem('promptgallery_has_unread');
+    if (saved !== null) return saved === 'true';
+    return true;
+  });
   const [notifications, setNotifications] = useState(() => {
     const saved = localStorage.getItem('promptgallery_notifications');
     if (saved) {
@@ -164,6 +153,10 @@ export default function App() {
   }, [notifications]);
 
   useEffect(() => {
+    localStorage.setItem('promptgallery_has_unread', String(hasUnreadNotifications));
+  }, [hasUnreadNotifications]);
+
+  useEffect(() => {
     localStorage.setItem('promptgallery_categories', JSON.stringify(categories));
   }, [categories]);
 
@@ -173,16 +166,11 @@ export default function App() {
     const unsubscribeCloud = subscribeStoryboards((cloudItems) => {
       if (Array.isArray(cloudItems) && cloudItems.length > 0) {
         setItems(prevItems => {
-          const existingMap = new Map(prevItems.map(i => [i.id, i]));
-          let hasNew = false;
-          for (const item of cloudItems) {
-            if (!existingMap.has(item.id)) {
-              existingMap.set(item.id, item);
-              hasNew = true;
-            }
-          }
-          if (!hasNew) return prevItems;
-          const merged = Array.from(existingMap.values());
+          // Cloud items are the source of truth — merge them with local-only items
+          const cloudIds = new Set(cloudItems.map(c => c.id));
+          // Keep local-only items (temp items created before cloud sync confirms)
+          const localOnly = prevItems.filter(p => !cloudIds.has(p.id) && p.id.startsWith('sb-'));
+          const merged = [...localOnly, ...cloudItems];
           localStorage.setItem('storyboard_items', JSON.stringify(merged));
           return merged;
         });
@@ -255,21 +243,31 @@ export default function App() {
     });
   };
 
-  // PWA Android install prompt support
+  // PWA Android install prompt support (remember dismissal so it doesn't keep appearing)
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [showInstallBanner, setShowInstallBanner] = useState(false);
+
+  const dismissInstallBanner = () => {
+    setShowInstallBanner(false);
+    sessionStorage.setItem('promptgallery_install_dismissed', 'true');
+  };
 
   useEffect(() => {
     const handleBeforeInstall = (e) => {
       e.preventDefault();
       setDeferredPrompt(e);
-      setShowInstallBanner(true);
+      // Only show if user hasn't dismissed it this session
+      const dismissed = sessionStorage.getItem('promptgallery_install_dismissed');
+      if (!dismissed) {
+        setShowInstallBanner(true);
+      }
     };
 
     window.addEventListener('beforeinstallprompt', handleBeforeInstall);
     window.addEventListener('appinstalled', () => {
       setShowInstallBanner(false);
       setDeferredPrompt(null);
+      sessionStorage.setItem('promptgallery_install_dismissed', 'true');
       showToast('Promptgallery App installed on your device! 📱');
     });
 
@@ -283,7 +281,7 @@ export default function App() {
       deferredPrompt.prompt();
       const { outcome } = await deferredPrompt.userChoice;
       if (outcome === 'accepted') {
-        setShowInstallBanner(false);
+        dismissInstallBanner();
       }
       setDeferredPrompt(null);
     } else {
@@ -465,7 +463,7 @@ export default function App() {
       sourceList = items.filter(item => favorites.includes(item.id));
     }
 
-    return sourceList.filter((item) => {
+    const filtered = sourceList.filter((item) => {
       // Category filter
       if (selectedCategory !== 'All' && item.category !== selectedCategory) {
         return false;
@@ -484,7 +482,31 @@ export default function App() {
       }
       return true;
     });
-  }, [items, favorites, currentView, selectedCategory, mediaTypeFilter, searchQuery]);
+
+    // Sort
+    const parseDate = (d) => {
+      if (!d || d === 'Recently' || d === 'Just now') return Date.now();
+      if (typeof d === 'string') {
+        const ts = Date.parse(d);
+        return isNaN(ts) ? 0 : ts;
+      }
+      return 0;
+    };
+
+    return [...filtered].sort((a, b) => {
+      switch (sortBy) {
+        case 'oldest':
+          return parseDate(a.createdAt) - parseDate(b.createdAt);
+        case 'title-asc':
+          return (a.title || '').localeCompare(b.title || '');
+        case 'title-desc':
+          return (b.title || '').localeCompare(a.title || '');
+        case 'newest':
+        default:
+          return parseDate(b.createdAt) - parseDate(a.createdAt);
+      }
+    });
+  }, [items, favorites, currentView, selectedCategory, mediaTypeFilter, searchQuery, sortBy]);
 
   // If user is not authenticated, restrict access and display dedicated LoginPage portal
   if (!currentUser) {
@@ -517,7 +539,7 @@ export default function App() {
                 <Download size={15} />
                 <span>Install</span>
               </button>
-              <button className="btn-icon pwa-banner-close" onClick={() => setShowInstallBanner(false)} aria-label="Tutup">
+              <button className="btn-icon pwa-banner-close" onClick={dismissInstallBanner} aria-label="Tutup">
                 <X size={16} />
               </button>
             </div>
@@ -559,7 +581,10 @@ export default function App() {
           onCloseNotifications={() => setIsNotificationOpen(false)}
           isNotificationOpen={isNotificationOpen}
           notifications={notifications}
-          onClearAllNotifications={() => setHasUnreadNotifications(false)}
+          onClearAllNotifications={() => {
+            setHasUnreadNotifications(false);
+            setNotifications(prev => prev.map(n => ({ ...n, unread: false })));
+          }}
           hasUnreadNotifications={hasUnreadNotifications}
           theme={theme}
           onToggleTheme={toggleTheme}
@@ -607,6 +632,8 @@ export default function App() {
               setSelectedCategory={setSelectedCategory}
               mediaTypeFilter={mediaTypeFilter}
               setMediaTypeFilter={setMediaTypeFilter}
+              sortBy={sortBy}
+              setSortBy={setSortBy}
               totalCount={currentView === 'favorites' ? favorites.length : items.length}
               filteredCount={displayItems.length}
               categories={categories}
@@ -674,7 +701,7 @@ export default function App() {
             <button 
               type="button" 
               className="btn-icon" 
-              onClick={() => setShowInstallBanner(false)} 
+              onClick={dismissInstallBanner} 
               style={{ width: '32px', height: '32px' }}
               aria-label="Close install banner"
             >

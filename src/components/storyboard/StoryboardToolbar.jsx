@@ -1,6 +1,13 @@
-import React, { useState } from 'react';
-import { Search, Image as ImageIcon, Video, Layers, X, Plus } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
+import { Search, Image as ImageIcon, Video, Layers, X, Plus, ArrowUpDown, Clock, ArrowDownAZ, ArrowUpAZ } from 'lucide-react';
 import { DEFAULT_CATEGORIES } from '../../data/mockData';
+
+const SORT_OPTIONS = [
+  { value: 'newest', label: 'Newest First', icon: Clock },
+  { value: 'oldest', label: 'Oldest First', icon: Clock },
+  { value: 'title-asc', label: 'Title A → Z', icon: ArrowDownAZ },
+  { value: 'title-desc', label: 'Title Z → A', icon: ArrowUpAZ },
+];
 
 export default function StoryboardToolbar({ 
   searchQuery, 
@@ -9,6 +16,8 @@ export default function StoryboardToolbar({
   setSelectedCategory,
   mediaTypeFilter,
   setMediaTypeFilter,
+  sortBy = 'newest',
+  setSortBy,
   totalCount,
   filteredCount,
   categories = DEFAULT_CATEGORIES,
@@ -16,6 +25,19 @@ export default function StoryboardToolbar({
 }) {
   const [isAdding, setIsAdding] = useState(false);
   const [newCat, setNewCat] = useState('');
+  const [sortOpen, setSortOpen] = useState(false);
+  const sortRef = useRef(null);
+
+  // Close sort dropdown on outside click
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (sortRef.current && !sortRef.current.contains(e.target)) {
+        setSortOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const handleAddSubmit = (e) => {
     e.preventDefault();
@@ -28,11 +50,13 @@ export default function StoryboardToolbar({
     setIsAdding(false);
   };
 
+  const currentSort = SORT_OPTIONS.find(o => o.value === sortBy) || SORT_OPTIONS[0];
   const allCategoryPills = ['All', ...categories];
+  const hasActiveFilters = searchQuery || selectedCategory !== 'All' || mediaTypeFilter !== 'all' || sortBy !== 'newest';
 
   return (
     <div className="toolbar">
-      {/* Top row: Search & Type Toggle */}
+      {/* Top row: Search & Sort & Type Toggle */}
       <div className="toolbar-row">
         <div className="search-box">
           <Search size={18} className="search-icon" />
@@ -60,29 +84,69 @@ export default function StoryboardToolbar({
           )}
         </div>
 
-        {/* Type Toggle: All / Images / Videos */}
-        <div className="type-filter-group">
-          <button 
-            className={`type-filter-btn ${mediaTypeFilter === 'all' ? 'active' : ''}`}
-            onClick={() => setMediaTypeFilter('all')}
-          >
-            <Layers size={14} style={{ display: 'inline', marginRight: '4px' }} />
-            All Media
-          </button>
-          <button 
-            className={`type-filter-btn ${mediaTypeFilter === 'image' ? 'active' : ''}`}
-            onClick={() => setMediaTypeFilter('image')}
-          >
-            <ImageIcon size={14} style={{ display: 'inline', marginRight: '4px' }} />
-            Images
-          </button>
-          <button 
-            className={`type-filter-btn ${mediaTypeFilter === 'video' ? 'active' : ''}`}
-            onClick={() => setMediaTypeFilter('video')}
-          >
-            <Video size={14} style={{ display: 'inline', marginRight: '4px' }} />
-            Videos
-          </button>
+        <div className="toolbar-controls">
+          {/* Sort By Dropdown */}
+          <div className="sort-dropdown" ref={sortRef}>
+            <button
+              className={`sort-trigger ${sortBy !== 'newest' ? 'active' : ''}`}
+              onClick={() => setSortOpen(prev => !prev)}
+              aria-label="Sort by"
+              title="Sort by"
+            >
+              <ArrowUpDown size={14} />
+              <span className="sort-label">{currentSort.label}</span>
+            </button>
+
+            {sortOpen && (
+              <div className="sort-menu">
+                <div className="sort-menu-header">Sort By</div>
+                {SORT_OPTIONS.map((option) => {
+                  const Icon = option.icon;
+                  return (
+                    <button
+                      key={option.value}
+                      className={`sort-menu-item ${sortBy === option.value ? 'active' : ''}`}
+                      onClick={() => {
+                        setSortBy(option.value);
+                        setSortOpen(false);
+                      }}
+                    >
+                      <Icon size={14} />
+                      <span>{option.label}</span>
+                      {sortBy === option.value && (
+                        <span className="sort-check">✓</span>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+
+          {/* Type Toggle: All / Images / Videos */}
+          <div className="type-filter-group">
+            <button 
+              className={`type-filter-btn ${mediaTypeFilter === 'all' ? 'active' : ''}`}
+              onClick={() => setMediaTypeFilter('all')}
+            >
+              <Layers size={14} style={{ display: 'inline', marginRight: '4px' }} />
+              All Media
+            </button>
+            <button 
+              className={`type-filter-btn ${mediaTypeFilter === 'image' ? 'active' : ''}`}
+              onClick={() => setMediaTypeFilter('image')}
+            >
+              <ImageIcon size={14} style={{ display: 'inline', marginRight: '4px' }} />
+              Images
+            </button>
+            <button 
+              className={`type-filter-btn ${mediaTypeFilter === 'video' ? 'active' : ''}`}
+              onClick={() => setMediaTypeFilter('video')}
+            >
+              <Video size={14} style={{ display: 'inline', marginRight: '4px' }} />
+              Videos
+            </button>
+          </div>
         </div>
       </div>
 
@@ -140,12 +204,13 @@ export default function StoryboardToolbar({
         <span>
           Showing <strong>{filteredCount}</strong> of {totalCount} storyboard items
         </span>
-        {(searchQuery || selectedCategory !== 'All' || mediaTypeFilter !== 'all') && (
+        {hasActiveFilters && (
           <button 
             onClick={() => {
               setSearchQuery('');
               setSelectedCategory('All');
               setMediaTypeFilter('all');
+              if (setSortBy) setSortBy('newest');
             }}
             style={{ color: 'var(--primary)', fontWeight: 600, fontSize: '0.8125rem' }}
           >

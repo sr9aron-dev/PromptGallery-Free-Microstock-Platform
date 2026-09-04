@@ -74,7 +74,7 @@ function firebaseApiPlugin() {
                 likes: 0
               };
 
-              const docRef = await db.collection('photos').add(docData);
+              const docRef = await db.collection('storyboards').add(docData);
               res.setHeader('Content-Type', 'application/json');
               res.end(JSON.stringify({ success: true, id: docRef.id, item: { ...docData, id: docRef.id, createdAt: 'Just now' } }));
             } catch (err) {
@@ -91,7 +91,7 @@ function firebaseApiPlugin() {
           try {
             const db = getAdminDb();
             if (!db) throw new Error('Firebase Admin database not initialized');
-            const snap = await db.collection('photos')
+            const snap = await db.collection('storyboards')
               .orderBy('createdAt', 'desc')
               .limit(100)
               .get();
